@@ -1,0 +1,188 @@
+{
+  "description": "Debian Virtual Machine Template.",
+  "variables": {
+
+    "cpus": "2",
+    "memory": "2048",
+    "video_memory": "16",
+
+    "disk_size": "25600",
+    "swap_size": "4096",
+
+    "headless": "false",
+
+    "debconf-priority": "critical",
+
+    "language": "en",
+    "country": "BR",
+    "locale": "en_US.UTF-8",
+    "supported-locales": "pt_BR.UTF-8",
+    "keymap": "br",
+    
+    "hostname": "unassigned-hostname",
+    "domain": "unassigned-domain",
+
+    "mirror": "ftp.br.debian.org",
+    "mirror-protocol": "http",
+    "mirror-country": "BR",
+    "mirror-directory": "/debian",
+    "mirror-proxy": "",
+    "mirror-security-host": "ftp.br.debian.org/debian-security",
+
+    "time-zone": "America/Sao_Paulo",
+    "ntp-server": "0.debian.pool.ntp.org"
+  },
+
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Debian_64",
+      "iso_url": "http://cdimage.debian.org/debian-cd/8.7.1/amd64/iso-cd/debian-8.7.1-amd64-netinst.iso",
+      "iso_checksum_url": "http://cdimage.debian.org/debian-cd/8.7.1/amd64/iso-cd/SHA512SUMS",
+      "iso_checksum_type": "sha512",
+      "communicator": "ssh",
+      "ssh_username": "root",
+      "ssh_password": "password",
+      "ssh_wait_timeout": "60m",
+
+      "vm_name": "debian",
+      "output_directory": "output-debian",
+      "headless": "{{user `headless`}}",
+      "guest_additions_mode": "disable",
+      "disk_size": "{{user `disk_size`}}",
+      "hard_drive_interface": "sata",
+      "hard_drive_nonrotational": true,
+      "hard_drive_discard": true,
+      "iso_interface": "ide",
+      "virtualbox_version_file": "/etc/virtualbox_version",
+
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--description", "Debian Virtual Machine Template."],
+    
+        ["modifyvm", "{{.Name}}", "--chipset", "ich9"],
+        ["modifyvm", "{{.Name}}", "--firmware", "bios"],
+        ["modifyvm", "{{.Name}}", "--audio", "none"],
+
+        ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"],
+        ["modifyvm", "{{.Name}}", "--cpuhotplug", "on"],
+
+        ["modifyvm", "{{.Name}}", "--memory", "{{user `memory`}}"],
+        ["modifyvm", "{{.Name}}", "--vram", "{{user `video_memory`}}"],
+
+        ["modifyvm", "{{.Name}}", "--keyboard", "ps2"],
+        ["modifyvm", "{{.Name}}", "--mouse", "ps2"],
+
+        ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
+
+        ["modifyvm", "{{.Name}}", "--acpi", "on"],
+        ["modifyvm", "{{.Name}}", "--ioapic", "on"],
+        ["modifyvm", "{{.Name}}", "--x2apic", "on"],
+        ["modifyvm", "{{.Name}}", "--biosapic", "x2apic"],
+        ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
+
+        ["modifyvm", "{{.Name}}", "--hwvirtex", "on"],
+        ["modifyvm", "{{.Name}}", "--nestedpaging", "on"],
+        ["modifyvm", "{{.Name}}", "--largepages", "on"],
+        ["modifyvm", "{{.Name}}", "--vtxvpid", "on"],
+        ["modifyvm", "{{.Name}}", "--vtxux", "on"],
+        ["modifyvm", "{{.Name}}", "--pae", "off"],
+
+        ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
+        ["modifyvm", "{{.Name}}", "--nic1", "nat"],
+
+        ["modifyvm", "{{.Name}}", "--audio", "none"],
+        ["modifyvm", "{{.Name}}", "--usb", "off"],
+
+        ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--hostiocache", "on"],
+        ["storagectl", "{{.Name}}", "--name", "SATA Controller", "--hostiocache", "on"],
+
+        ["storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--device", "0", "--port", "0", "--nonrotational", "on", "--hotpluggable", "on"],
+
+        ["createmedium", "disk", "--filename", "./output-debian/{{.Name}}/{{.Name}}-disk2.vmdk", "--size", "{{user `swap_size`}}", "--format", "vmdk"],
+        ["storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--device", "0", "--port", "1", "--type", "hdd", "--medium", "./output-debian/{{.Name}}/{{.Name}}-disk2.vmdk", "--nonrotational", "on", "--hotpluggable", "on"]
+
+      ],
+
+      "vboxmanage_post": [
+        ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove"],
+
+        ["modifyvm", "{{.Name}}", "--boot1", "disk"],
+        ["modifyvm", "{{.Name}}", "--boot2", "none"],
+        ["modifyvm", "{{.Name}}", "--boot3", "none"],
+        ["modifyvm", "{{.Name}}", "--boot4", "none"]
+      ],
+
+      "http_directory": ".",
+      "shutdown_command": "sudo shutdown -P now",
+
+      "boot_command": [
+        "<esc><wait>",
+        "install <wait>",
+
+        "fb=false <wait>",
+        
+        "debconf/priority={{user `debconf-priority`}} <wait>",
+
+        "anna/choose_modules=true <wait>",
+        "cdrom-detect/success=note <wait>",
+
+        "netcfg/enable=true <wait>",
+        "netcfg/choose_interface_select=auto <wait>",
+        "netcfg/link_wait_timeout=3 <wait>",
+        "netcfg/use_autoconfig=true <wait>",
+        
+        "debian-installer/language={{user `language`}} <wait>",
+        "debian-installer/country={{user `country`}} <wait>",
+        "debian-installer/locale={{user `locale`}} <wait>",
+        "localechooser/supported-locales={{user `supported-locales`}} <wait>",
+        
+        "keyboard-configuration/xkb-keymap={{user `keymap`}} <wait>",
+        
+        "netcfg/get_hostname={{user `hostname`}} <wait>",
+        "netcfg/get_domain={{user `domain`}} <wait>",
+
+        "mirror/http/mirror={{user `mirror`}} <wait>",        
+        "mirror/protocol={{user `mirror-protocol`}} <wait>",
+        "mirror/country={{user `mirror-country`}} <wait>",
+        "mirror/http/directory={{user `mirror-directory`}} <wait>",
+        "mirror/http/proxy={{user `mirror-proxy`}} <wait>",
+
+        "apt-setup/security_host={{user `mirror-security-host`}} <wait>",
+        
+        "clock-setup/utc=true <wait>",
+        "time/zone={{user `time-zone`}} <wait>",
+        "clock-setup/ntp=true <wait>",
+        "clock-setup/ntp-server={{user `ntp-server`}} <wait>",
+
+        "auto-install/enable=true <wait>",
+        "preseed/interactive=false <wait>",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>",
+        "<enter><wait>"
+      ]
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "{{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
+      "scripts": [
+        "./configure-machine.sh",
+        "./install-guest-additions.sh",
+        "./clean-up.sh"
+      ]
+    }
+  ],
+
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "compression_level": 9,
+      "output": "debian.box"
+    },
+    {
+      "type": "shell-local",
+      "inline": "vagrant box add --name debian debian.box"
+    }
+  ]
+}
