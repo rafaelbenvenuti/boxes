@@ -65,24 +65,24 @@
                                                            , "--audio", "none"
                                                            , "--usb", "off" ] 
                                 , [ "storagectl", "{{.Name}}", "--name", "SATA Controller"
-				                             , "--hostiocache", "on" ]
+                                                             , "--hostiocache", "on" ]
                                 , [ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller"
-				                                , "--device", "0"
-								, "--port", "0"
-								, "--nonrotational", "on"
-								, "--hotpluggable", "on" ]
+                                        , "--device", "0"
+                                        , "--port", "0"
+                                        , "--nonrotational", "on"
+                                        , "--hotpluggable", "on" ]
                                 , [ "storagectl", "{{.Name}}", "--name", "IDE Controller"
-				                             , "--remove" ] ]
+                                                             , "--remove" ] ]
                 , "vboxmanage_post": [ [ "modifyvm", "{{.Name}}", "--boot1", "disk"
                                                                 , "--boot2", "none"
                                                                 , "--boot3", "none"
                                                                 , "--boot4", "none" ] ]
                 , "http_directory": "http"
-		, "boot_wait": "45s"
+                , "boot_wait": "45s"
                 , "boot_command": [ "curl -O 'http://{{.HTTPIP}}:{{.HTTPPort}}/install-{base,chroot}.sh'<enter><wait>"
                                   , "bash install-base.sh < install-chroot.sh && systemctl reboot<enter>" ]
                 , "shutdown_command": "sudo systemctl poweroff"
-	      } ]
+              } ]
 , "post-processors": [ { "type": "vagrant"
                        , "compression_level": 9
                        , "output": "archlinux.box" }
