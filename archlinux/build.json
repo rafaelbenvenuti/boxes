@@ -81,8 +81,7 @@
                 , "boot_wait": "45s"
                 , "boot_command": [ "curl -O 'http://{{.HTTPIP}}:{{.HTTPPort}}/install-{base,chroot}.sh'<enter><wait>"
                                   , "bash install-base.sh < install-chroot.sh && systemctl reboot<enter>" ]
-                , "shutdown_command": "sudo systemctl poweroff"
-              } ]
+                , "shutdown_command": "sudo systemctl poweroff" } ]
 , "post-processors": [ { "type": "vagrant"
                        , "compression_level": 9
                        , "output": "archlinux.box" }
