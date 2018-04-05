@@ -35,6 +35,7 @@
                 , "ssh_username": "root"
                 , "ssh_password": "password"
                 , "ssh_wait_timeout": "60m"
+                , "keep_registered": false
                 , "vm_name": "debian"
                 , "output_directory": "output-debian"
                 , "headless": "{{user `headless`}}"
@@ -130,5 +131,5 @@
                        , "compression_level": 9
                        , "output": "debian-{{user `release`}}.box" }
                      , { "type": "shell-local"
-                       , "inline": "vagrant box add --name debian debian-{{user `release`}}.box" } ]
+                       , "inline": "vagrant box add --force --name debian debian-{{user `release`}}.box" } ]
 }
