@@ -18,7 +18,6 @@
                , "mirror-country": "DE"
                , "mirror-directory": "/debian"
                , "mirror-proxy": ""
-               , "source-repositories": "false"
                , "time-zone": "Europe/Berlin"
                , "ntp-server": "0.debian.pool.ntp.org"
                }
@@ -106,7 +105,6 @@
                                   , "mirror/country={{user `mirror-country`}} "
                                   , "mirror/http/directory={{user `mirror-directory`}} "
                                   , "mirror/http/proxy={{user `mirror-proxy`}} "
-                                  , "apt-setup/enable-source-repositories={{user `source-repositories`}} "
                                   , "clock-setup/utc=true "
                                   , "time/zone={{user `time-zone`}} "
                                   , "clock-setup/ntp=true "
