@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Clean APT cache.
-apt-get --yes autoremove
-apt-get --yes clean
+apt --yes autoremove
+apt --yes clean
 
 # Remove dhcp leases.
 rm -rf /var/lib/dhcp/*.leases
