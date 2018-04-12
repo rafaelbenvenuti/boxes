@@ -72,7 +72,7 @@
                                                            , "--nictype1", "virtio"
                                                            , "--nic1", "nat"
                                                            , "--audio", "none"
-                                                           , "--usb", "off" ] 
+                                                           , "--usb", "off" ]
                                 , [ "storagectl", "{{.Name}}", "--name", "SATA Controller"
                                                              , "--hostiocache", "on" ]
                                 , [ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller"
@@ -123,7 +123,7 @@
 , "provisioners": [ { "type": "shell"
                     , "execute_command": "{{.Vars}} sudo -E /bin/bash '{{.Path}}'"
                     , "scripts": [ "./scripts/configure-machine.sh"
-                                 , "./scripts/clean-up.sh" ] 
+                                 , "./scripts/clean-up.sh" ]
   } ]
 , "post-processors": [ { "type": "vagrant"
                        , "compression_level": 9
